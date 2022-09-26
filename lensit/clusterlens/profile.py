@@ -164,7 +164,7 @@ class profile(object):
         return sigma
 
     def analitic_kappa_ft(self, M200, z, ell, const_c=None):
-        """Analytic Fourier transform of the convergence fiels for a NFW profile
+        """Analytic Fourier transform of the convergence fields for a NFW profile
             from Oguri&Takada 2010, Eq.28"""
         c = self.get_concentration(M200, z, const_c)
         mu_nfw = np.log(1. + c) - c / (1. + c)
@@ -234,7 +234,7 @@ class profile(object):
         return np.sqrt((x-c0[0])**2 * dtheta[0]**2 + (y-c0[1])**2 * dtheta[1]**2)
 
 
-    def kappa_map(self, M200, z, shape, lsides, xmax=None):
+    def kappa_map(self, M200, z, shape, lsides, xmax=None, center=None):
         """Get the convergence map of the cluster
             Args:
                 M200: Cluster mass defined as in a sphere 200 times the critical density 
@@ -242,14 +242,18 @@ class profile(object):
                 shape(2-tuple): pair of int defining the number of pixels on each side of the box
                 lsides(2-tuple): physical size (in radians) of the box sides
                 xmax: cutoff scale in factors of rs
+                center (2-tuple): center of the cluster (by default center of the map)
             Returns:
                 kappa_map: numpy array defining the convergence field
         """
         dtheta_x = lsides[0]/shape[0] * 180/np.pi*60
         dtheta_y = lsides[1]/shape[1] * 180/np.pi*60
         # Center of the cluster
-        x0 = (shape[0]+1.)/2. 
-        y0 = (shape[1]+1.)/2
+        if center is None:
+            x0 = (shape[0]+1.)/2. 
+            y0 = (shape[1]+1.)/2
+        else:
+            x0, y0 = center
         X, Y = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]))
         theta_amin = self.pix_to_theta(X, Y, (dtheta_x,dtheta_y),  (x0, y0))
 

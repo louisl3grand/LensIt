@@ -77,7 +77,7 @@ class ell_mat:
             :math:`\ell = \rm{int}\left(|k| - \frac 12 \right)`
 
         """
-        ret = np.uint16(np.round(k - 0.5) + 0.5 * ((k - 0.5) < 0))
+        ret = np.uint32(np.round(k - 0.5) + 0.5 * ((k - 0.5) < 0))
         return ret
 
     def __call__(self, *args, **kwargs):
@@ -238,7 +238,7 @@ class ell_mat:
                          weights=weights[:, 1:self.rshape[1] - 1].flatten(), minlength=self.ellmax + 1)
         Cl += np.bincount(self.get_ellmat()[0:self.shape[0] // 2 + 1, [-1, 0]].flatten(),
                           weights=weights[0:self.shape[0] // 2 + 1, [-1, 0]].flatten(), minlength=self.ellmax + 1)
-        Cl[self._nz_counts] *= (np.prod(self.lsides) / np.prod(self.shape) ** 2) / self._ell_counts[self._nz_counts]
+        Cl[self.z] *= (np.prod(self.lsides) / np.prod(self.shape) ** 2) / self._ell_counts[self._nz_counts]
         return Cl
 
     def bin_inell(self, rfftmap):
