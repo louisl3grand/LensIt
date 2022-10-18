@@ -17,7 +17,7 @@ def get_cluster_libdir(cambinifile, profilename, npix, lpix_amin, ellmax_sky, M2
 
 
 class cluster_maps(object):
-    def __init__(self, libdir:str, npix:int, lpix_amin:float, nsims:int, cosmo:CAMBdata, profparams:dict, profilename='nfw', ellmax_sky = 6000, ellmax_data = 3000, cmb_exp='5muKamin_1amin', cache_maps=False):
+    def __init__(self, libdir:str, npix:int, lpix_amin:float, nsims:int, cosmo:CAMBdata, profparams:dict, profilename='nfw', ellmax_sky = 6000, cmb_exp='5muKamin_1amin', cache_maps=False):
         """Library for flat-sky CMB simulations lensed by a galaxy cluster.
 
         Args:
@@ -70,15 +70,14 @@ class cluster_maps(object):
         lencmbs_libdir = opj(self.libdir, 'len_alms')
 
         # Get the noise and beam of the experiment
-        sN_uKamin, sN_uKaminP, Beam_FWHM_amin, ellmin, ellmax = li.get_config(self.cmb_exp)
+        sN_uKamin, sN_uKaminP, Beam_FWHM_amin, self.ellmin_data , self.ellmax_data  = li.get_config(self.cmb_exp)
         self.len_cmbs = sim_cmb_len_cluster(lencmbs_libdir, self.lib_skyalm, self.cls_unl, self.M200, self.z, self.haloprofile, lib_pha=skypha)
         
-        # Set the lmax of the data maps
-        self.ellmax_data = ellmax_data
+
         self.cl_transf = gauss_beam(Beam_FWHM_amin / 60. * np.pi / 180., lmax=self.ellmax_data)
 
         # The resolution of the data map could be lower than the resolution of the sky map (=the true map)
-        self.lib_datalm = ell_mat.ffs_alm_pyFFTW(self.ellmat, filt_func=lambda ell: ell <= self.ellmax_data, num_threads=self.num_threads)
+        self.lib_datalm = ell_mat.ffs_alm_pyFFTW(self.ellmat, filt_func=lambda ell: ell <= self.ellmax_data and ell >= self.ellmin_data, num_threads=self.num_threads)
         
         vcell_amin2 = np.prod(self.lib_datalm.ell_mat.lsides) / np.prod(self.lib_datalm.ell_mat.shape) * (180 * 60. / np.pi) ** 2
         nTpix = sN_uKamin / np.sqrt(vcell_amin2)
