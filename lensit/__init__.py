@@ -211,6 +211,16 @@ def get_config(exp):
         Beam_FWHM_amin = 3.
         ellmin = 10
         ellmax = 3000
+    elif exp == 'SO_baseline':
+        sN_uKamin = 5
+        Beam_FWHM_amin = 1.4
+        ellmin = 10
+        ellmax = 3000
+    elif exp == 'SO_goal':
+        sN_uKamin = 5
+        Beam_FWHM_amin = 1.4
+        ellmin = 10
+        ellmax = 3000
     elif exp == 'SOb1':
         sN_uKamin = 3.
         Beam_FWHM_amin = 1.
